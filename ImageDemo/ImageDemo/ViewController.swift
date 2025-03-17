@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        // 기본 스크롤과 스택 뷰 추가
+        // UI 설정 (기본 스크롤과 스택 뷰 추가)
         setupUI()
         
         // 기본 도형 표시
@@ -24,6 +24,12 @@ class ViewController: UIViewController {
         
         // 이미지 표시
         setupImages()
+        
+        // 이미지 컨텐츠 모드
+        setupImageContentMode()
+        
+        // SF Symbol 표시
+        setupSFSymbols()
     }
     
     // MARK: - UI 설정 (기본 스크롤과 스택 뷰 추가)
@@ -149,6 +155,91 @@ class ViewController: UIViewController {
             // 중요: 컨테이너 뷰의 높이 명시적으로 설정 (마지막 요소 기준)
             containerView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20)
         ])
+    }
+    
+    // MARK: - 이미지 컨텐츠 모드
+    func setupImageContentMode() {
+        addImageContentModeWith(title: "3. 이미지 컨텐츠 모드 (aspectFill)", contentMode: .scaleAspectFill)
+        
+        addImageContentModeWith(title: "4. 이미지 컨텐츠 모드 (aspectFit)", contentMode: .scaleAspectFit)
+        
+        addImageContentModeWith(title: "5. 이미지 컨텐츠 모드 (scaleToFill)", contentMode: .scaleToFill)
+    }
+    
+    // 이미지 컨텐츠 모드 추가
+    func addImageContentModeWith(title: String, contentMode: UIView.ContentMode) {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = .systemFont(ofSize: 24)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(titleLabel)
+        
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "car")
+        imageView.backgroundColor = .black
+        imageView.contentMode = contentMode
+        imageView.clipsToBounds = true // 이거를 true로 해야 안겹치고 정상적으로 사진들이 뜬다.
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            
+            imageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: 100),
+            
+            containerView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20)
+        ])
+        
+        stackView.addArrangedSubview(containerView)
+    }
+    
+    // MARK: - SF Symbol 표시
+    func setupSFSymbols() {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // 제목 레이블
+        let titleLabel = UILabel()
+        titleLabel.text = "6. SF Symbol 표시"
+        titleLabel.font = .systemFont(ofSize: 24)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.addSubview(titleLabel)
+        
+        // SF Symbol 이미지 뷰 생성
+        if #available(iOS 13.0, *) {
+            let imageView = UIImageView()
+            let configuration = UIImage.SymbolConfiguration(pointSize: 100)
+            imageView.image = UIImage(systemName: "hare.fill", withConfiguration: configuration)
+            imageView.tintColor = .purple
+            imageView.contentMode = .scaleAspectFit
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(imageView)
+            
+            // 스택 뷰에 컨테이너 뷰 추가
+            stackView.addArrangedSubview(containerView)
+            
+            // 제목 레이블, 이미지 뷰의 제약조건 설정
+            NSLayoutConstraint.activate([
+                titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
+                titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                
+                imageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+                imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                imageView.heightAnchor.constraint(equalToConstant: 100),
+                
+                // 중요: 컨테이너 뷰의 높이 명시적으로 설정 (마지막 요소 기준)
+                containerView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20)
+            ])
+        }
     }
 }
 
