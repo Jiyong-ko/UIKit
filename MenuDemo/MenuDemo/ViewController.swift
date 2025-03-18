@@ -62,6 +62,9 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in self?.showMessage("Delete 선택됨")
         })
         
+        // 취소 액션 추가 ( 외부 탭 닫힘도 같이 동작함 )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
         // 아이패드에서 팝오버 형태로 메뉴를 표시하기 위한 설정입니다.
         if let popoverController = alert.popoverPresentationController {
             popoverController.sourceView = view
