@@ -25,7 +25,7 @@ class ViewController: UIViewController {
         // 밑줄 스타일
         let attributedTitle = AttributedString("Apple")
         var container = AttributeContainer()
-        container.underlineStyle = .single
+        container.underlineStyle = [.single]
         container.underlineColor = .systemBlue
         container.font = .systemFont(ofSize: 20)
         
