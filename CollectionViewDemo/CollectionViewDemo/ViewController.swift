@@ -38,12 +38,22 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
       super.viewDidLoad()
       // Do any additional setup after loading the view.
-
+    
+      configureNavigation()
       setupCollectionView()
       configureDataSource()
       applySnapshot()
     }
 
+    func configureNavigation() {
+      title = "Collection View"
+      navigationController?.navigationBar.prefersLargeTitles = true
+      let searchController = UISearchController(searchResultsController: nil)
+      navigationItem.searchController = searchController
+      searchController.searchBar.placeholder = "검색"
+      searchController.searchBar.delegate = self
+    }
+    
     func setupCollectionView() {
       collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
       collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -100,16 +110,34 @@ class ViewController: UIViewController {
     }
   }
 
-  extension ViewController: UICollectionViewDelegate {
+extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-      guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
-      print("Selected item: \(item)")
+        guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
+        print("Selected item: \(item)")
+        
+        let alert = UIAlertController(
+            title: "선택된 아이템",
+            message: item.title,
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func filterItems(containing text: String) {
+        let filteredItems = items.filter { $0.title.contains(text) }
+        var snapshot = NSDiffableDataSourceSnapshot<Section, GridItem>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(filteredItems, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
 
-      let alert = UIAlertController(
-        title: "선택된 아이템",
-        message: item.title,
-        preferredStyle: .alert)
-      alert.addAction(UIAlertAction(title: "확인", style: .default))
-      present(alert, animated: true)
+extension ViewController: UISearchBarDelegate {
+  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    if searchText.isEmpty {
+      applySnapshot()
+    } else {
+      filterItems(containing: searchText)
     }
   }
+}
