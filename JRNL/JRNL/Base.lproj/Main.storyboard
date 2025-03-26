@@ -366,7 +366,11 @@
                                 <segue destination="jsJ-jr-qbZ" kind="unwind" unwindAction="unwindNewEntryCancelWithSegue:" id="5tU-9X-rJV"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="6pF-aT-pdX"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="6pF-aT-pdX">
+                            <connections>
+                                <segue destination="jsJ-jr-qbZ" kind="unwind" unwindAction="unwindNewEntryCancelWithSegue:" id="aEZ-iy-hJj"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="bodyTextView" destination="sRx-GO-5Az" id="Ndc-tH-8DE"/>
