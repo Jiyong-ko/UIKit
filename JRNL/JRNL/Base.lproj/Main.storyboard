@@ -13,7 +13,7 @@
         <!--Map-->
         <scene sceneID="Kdm-pB-M4g">
             <objects>
-                <viewController id="6l7-yj-yBk" sceneMemberID="viewController">
+                <viewController id="6l7-yj-yBk" customClass="MapViewController" customModule="JRNL" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PTe-YO-LwW">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -33,6 +33,10 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Map" id="so9-QM-0Qm"/>
+                    <connections>
+                        <outlet property="mapView" destination="2Sv-Up-B5L" id="EDO-eK-dly"/>
+                        <segue destination="Jep-kH-EVE" kind="show" identifier="showMapDetail" id="1ib-ek-gnu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CO7-Gd-F6L" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -41,7 +45,7 @@
         <!--Entry Detail-->
         <scene sceneID="cAl-cg-na9">
             <objects>
-                <tableViewController id="Jep-kH-EVE" sceneMemberID="viewController">
+                <tableViewController id="Jep-kH-EVE" customClass="JournalEntryDetailViewController" customModule="JRNL" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="Tt7-v9-hfN">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -196,10 +200,17 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Entry Detail" id="Hh7-yu-DHx"/>
+                    <connections>
+                        <outlet property="bodyTextView" destination="Juh-I0-79j" id="ToM-1j-Mq2"/>
+                        <outlet property="dateLabel" destination="BBt-hy-fgS" id="xpq-La-Lkd"/>
+                        <outlet property="mapImageView" destination="h4b-fZ-QTg" id="Qlf-F2-ulZ"/>
+                        <outlet property="photoImageView" destination="TrN-yv-eoI" id="js4-Do-GGy"/>
+                        <outlet property="titleLabel" destination="IQ1-MW-E4E" id="Nlp-bi-l7A"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rTW-kO-Xyf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3939" y="868"/>
+            <point key="canvasLocation" x="3936" y="845"/>
         </scene>
         <!--Journal-->
         <scene sceneID="GTx-HP-bJf">
@@ -255,7 +266,6 @@
                                             <outlet property="dateLabel" destination="sQi-Rc-pIV" id="aU7-Q5-Icb"/>
                                             <outlet property="photoImageView" destination="lop-l2-fAj" id="TUe-6c-dwN"/>
                                             <outlet property="titleLabel" destination="9Zp-Ll-1Qy" id="jVo-41-MXz"/>
-                                            <segue destination="Jep-kH-EVE" kind="show" id="TVJ-1S-rF1"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -283,6 +293,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="vRg-bx-MXv" id="ak3-2v-Cnt"/>
+                        <segue destination="Jep-kH-EVE" kind="show" identifier="showDetail" id="OTD-xM-t1b"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5oq-TQ-ETO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -339,7 +350,6 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="128" id="z7o-3S-39Q"/>
                                         </constraints>
-                                        <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                         <color key="textColor" systemColor="labelColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -471,6 +481,9 @@
             <point key="canvasLocation" x="3923" y="111"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="OTD-xM-t1b"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="face.smiling" catalog="system" width="128" height="123"/>
         <image name="map" catalog="system" width="128" height="112"/>

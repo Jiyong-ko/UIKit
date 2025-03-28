@@ -23,13 +23,13 @@ class AddJournalEntryViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-//    스토리보드 내에서 delegate를 설정해줬기 때문에 아래 코드는 필요없다.
-//    titleTextField.delegate = self
-//    bodyTextView.delegate = self
-      
-      // 위치 정보 사용을 위한 설정
-      locationManager.delegate = self
-      locationManager.requestWhenInUseAuthorization()
+    //    스토리보드 내에서 delegate를 설정해줬기 때문에 아래 코드는 필요없다.
+    //    titleTextField.delegate = self
+    //    bodyTextView.delegate = self
+
+    // 위치 정보 사용을 위한 설정
+    locationManager.delegate = self
+    locationManager.requestWhenInUseAuthorization()
   }
 
   @IBAction func getLocationSwitchValueChanged(_ sender: Any) {
@@ -40,10 +40,10 @@ class AddJournalEntryViewController: UIViewController {
       getLocationSwitchLabel.text = "Get Location"
     }
   }
-  
+
 
   // MARK: - Navigation
-  
+
   // In a storyboard-based application, you will often want to do a little preparation before navigation
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     print("prepare: \(String(describing: segue.identifier))")
@@ -53,7 +53,15 @@ class AddJournalEntryViewController: UIViewController {
         let body = bodyTextView.text ?? ""
         let photo = photoImageView.image
         let rating = 3
-        newJournalEntry = JournalEntry(rating: rating, title: title, body: body, photo: photo)
+        if getLocationSwitch.isOn, let location = currentLocation {
+          newJournalEntry = JournalEntry(rating: rating, title: title, body: body,
+                                         photo: photo,
+                                         latitude: location.coordinate.latitude,
+                                         longitude: location.coordinate.longitude)
+        } else {
+          newJournalEntry = JournalEntry(rating: rating, title: title, body: body,
+                                         photo: photo)
+        }
       }
     }
   }
@@ -64,6 +72,35 @@ class AddJournalEntryViewController: UIViewController {
     let bodyText = bodyTextView.text ?? ""
     saveButton.isEnabled = !titleText.isEmpty && !bodyText.isEmpty
   }
+
+  // 위치 권한 거부 알림 다이얼로그 표시 메서드
+  func showLocationPermissionDeniedAlert() {
+    let alertController = UIAlertController(
+      title: "위치 정보 권한 필요",
+      message: "이 앱의 기능을 사용하기 위해서는 위치 정보 접근 권한이 필요합니다. 설정에서 위치 접근 권한을 허용해주세요.",
+      preferredStyle: .alert
+    )
+
+    let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+
+    let settingsAction = UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+      self.openAppSettings()
+    }
+
+    alertController.addAction(cancelAction)
+    alertController.addAction(settingsAction)
+
+    present(alertController, animated: true, completion: nil)
+  }
+
+  // 앱 설정 페이지로 이동하는 메서드 ( 시뮬레이터에서는 동작 안함 )
+  private func openAppSettings() {
+    if let url = URL(string: UIApplication.openSettingsURLString) {
+      // Ask the system to open that URL.
+       UIApplication.shared.open(url)
+    }
+  }
+
 }
 
 // MARK: - UITextFieldDelegate
@@ -106,6 +143,26 @@ extension AddJournalEntryViewController: UITextViewDelegate {
 
 // MARK: - CLLocationManagerDelegate
 extension AddJournalEntryViewController: CLLocationManagerDelegate {
+
+  func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    switch manager.authorizationStatus {
+    case .authorizedWhenInUse:
+      print("authorizedWhenInUse")
+    case .denied:
+      // 위치 정보 사용이 거부된 경우
+      showLocationPermissionDeniedAlert()
+      print("denied")
+    case .notDetermined:
+      print("notDetermined")
+    case .restricted:
+      print("restricted")
+    case .authorizedAlways:
+      print("authorizedAlways")
+    @unknown default:
+      print("unknown")
+    }
+  }
+
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     guard let location = locations.first else { return }
     currentLocation = location
@@ -114,5 +171,6 @@ extension AddJournalEntryViewController: CLLocationManagerDelegate {
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     print("Error: \(error)")
+
   }
 }
