@@ -8,6 +8,7 @@ import UIKit
 import MapKit
 
 class JournalEntry: NSObject, MKAnnotation, Codable {
+  var id: UUID = UUID()
   let dateString: String
   let rating: Int
   let entryTitle: String
@@ -33,7 +34,7 @@ class JournalEntry: NSObject, MKAnnotation, Codable {
 
   // MARK: - MKAnnotation
   var title: String? {
-      dateString
+    dateString
   }
 
   var subtitle: String? {

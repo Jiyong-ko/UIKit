@@ -8,7 +8,12 @@
 import UIKit
 import CoreLocation
 
-class AddJournalEntryViewController: UIViewController {
+class AddJournalEntryViewController: UIViewController,
+                                     UITextFieldDelegate,
+                                     UITextViewDelegate,
+                                     CLLocationManagerDelegate,
+                                     UIImagePickerControllerDelegate,
+                                     UINavigationControllerDelegate {
 
   @IBOutlet weak var getLocationSwitch: UISwitch!
   @IBOutlet weak var getLocationSwitchLabel: UILabel!
@@ -16,6 +21,7 @@ class AddJournalEntryViewController: UIViewController {
   @IBOutlet weak var titleTextField: UITextField!
   @IBOutlet weak var bodyTextView: UITextView!
   @IBOutlet weak var photoImageView: UIImageView!
+  @IBOutlet weak var ratingView: RatingView!
 
   var newJournalEntry: JournalEntry?
   let locationManager = CLLocationManager()
@@ -52,7 +58,7 @@ class AddJournalEntryViewController: UIViewController {
         let title = titleTextField.text ?? ""
         let body = bodyTextView.text ?? ""
         let photo = photoImageView.image
-        let rating = 3
+        let rating = ratingView.rating
         if getLocationSwitch.isOn, let location = currentLocation {
           newJournalEntry = JournalEntry(rating: rating, title: title, body: body,
                                          photo: photo,
@@ -65,6 +71,22 @@ class AddJournalEntryViewController: UIViewController {
       }
     }
   }
+
+  // MARK: - Actions
+  @IBAction func getPhoto(_ sender: UITapGestureRecognizer) {
+    let imagePickerController = UIImagePickerController()
+    imagePickerController.delegate = self
+
+    #if targetEnvironment(simulator)
+    imagePickerController.sourceType = .photoLibrary
+    #else
+    imagePickerController.sourceType = .camera
+    imagePickerController.showsCameraControls = true
+    #endif
+
+    present(imagePickerController, animated: true)
+  }
+
 
   // MARK: - Methods
   func updateSaveButtonState() {
@@ -97,14 +119,11 @@ class AddJournalEntryViewController: UIViewController {
   private func openAppSettings() {
     if let url = URL(string: UIApplication.openSettingsURLString) {
       // Ask the system to open that URL.
-       UIApplication.shared.open(url)
+      UIApplication.shared.open(url)
     }
   }
 
-}
-
-// MARK: - UITextFieldDelegate
-extension AddJournalEntryViewController: UITextFieldDelegate {
+  // MARK: - UITextFieldDelegate
   // 텍스트 필드가 편집을 시작할 때 호출
   func textFieldDidBeginEditing(_ textField: UITextField) {
     saveButton.isEnabled = false
@@ -119,10 +138,8 @@ extension AddJournalEntryViewController: UITextFieldDelegate {
   func textFieldDidEndEditing(_ textField: UITextField) {
     updateSaveButtonState()
   }
-}
 
-// MARK: - UITextViewDelegate
-extension AddJournalEntryViewController: UITextViewDelegate {
+  // MARK: - UITextViewDelegate
   // 텍스트 뷰가 편집을 시작할 때 호출
   func textViewDidBeginEditing(_ textView: UITextView) {
     saveButton.isEnabled = false
@@ -139,11 +156,8 @@ extension AddJournalEntryViewController: UITextViewDelegate {
   func textViewDidEndEditing(_ textView: UITextView) {
     updateSaveButtonState()
   }
-}
 
-// MARK: - CLLocationManagerDelegate
-extension AddJournalEntryViewController: CLLocationManagerDelegate {
-
+  // MARK: - CLLocationManagerDelegate
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     switch manager.authorizationStatus {
     case .authorizedWhenInUse:
@@ -172,5 +186,21 @@ extension AddJournalEntryViewController: CLLocationManagerDelegate {
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     print("Error: \(error)")
 
+  }
+
+  // MARK: - UIImagePickerControllerDelegate
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    guard let selectedImage = info[.originalImage] as? UIImage else {
+      fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")
+    }
+    let smallerImage = selectedImage.preparingThumbnail(
+      of: CGSize(width: 200, height: 200)
+    )
+    photoImageView.image = smallerImage
+    dismiss(animated: true, completion: nil)
+  }
+
+  func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+    dismiss(animated: true, completion: nil)
   }
 }

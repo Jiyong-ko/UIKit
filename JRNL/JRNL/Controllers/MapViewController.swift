@@ -49,7 +49,7 @@ extension MapViewController: CLLocationManagerDelegate {
       let region = MKCoordinateRegion(center: coordinate, span: span)
       mapView.setRegion(region, animated: true)
       self.navigationItem.title = "Map"
-        mapView.addAnnotations(SharedData.shared.getAllJournalEntries())
+      mapView.addAnnotations(SharedData.shared.getAllJournalEntries())
     }
   }
 
