@@ -10,11 +10,11 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+        SimpleEntry(date: Date(), journalEntryDate: "JRNL", journalEntryTitle: "")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+        let entry = SimpleEntry(date: Date(), journalEntryDate: "JRNL", journalEntryTitle: "")
         completion(entry)
     }
 
@@ -23,9 +23,13 @@ struct Provider: TimelineProvider {
 
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
+        
+        SharedData.shared.fetchJournalEntries()
+        let journalEntries = SharedData.shared.getAllJournalEntries()
+        
+        for minuteOffset in 0 ..< journalEntries.count {
+            let entryDate = currentDate.addingTimeInterval(TimeInterval(60 * minuteOffset))
+            let entry = SimpleEntry(date: entryDate, journalEntryDate: journalEntries[minuteOffset].title ?? "JRNL", journalEntryTitle: journalEntries[minuteOffset].entryTitle)
             entries.append(entry)
         }
 
@@ -40,7 +44,8 @@ struct Provider: TimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let emoji: String
+    var journalEntryDate: String
+    var journalEntryTitle: String
 }
 
 struct JRNLWidgetEntryView : View {
@@ -48,11 +53,8 @@ struct JRNLWidgetEntryView : View {
 
     var body: some View {
         VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Emoji:")
-            Text(entry.emoji)
+            Text(entry.journalEntryDate)
+            Text(entry.journalEntryTitle)
         }
     }
 }
@@ -73,12 +75,14 @@ struct JRNLWidget: Widget {
         }
         .configurationDisplayName("My Widget")
         .description("This is an example widget.")
+        .supportedFamilies([.systemMedium, .accessoryRectangular])
     }
 }
 
 #Preview(as: .systemSmall) {
     JRNLWidget()
 } timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+    SimpleEntry(date: .now, journalEntryDate: "2025년 4월 22일", journalEntryTitle: "오늘은 좋은 날입니다")
+    SimpleEntry(date: .now, journalEntryDate: "2025년 4월 22일", journalEntryTitle: "오늘은 나쁜 날입니다")
+    SimpleEntry(date: .now, journalEntryDate: "2025년 4월 22일", journalEntryTitle: "오늘은 그저 그런 날입니다")
 }

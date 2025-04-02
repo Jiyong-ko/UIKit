@@ -19,13 +19,19 @@ class SharedData {
   // MARK: - Initializer
   private init() {
     do {
-      container = try ModelContainer(for: JournalEntry.self)
-      if let container = container {
-        context = ModelContext(container)
-      }
-    } catch {
-      fatalError("Failed to create ModelContainer")
-    }
+        let schema = Schema([JournalEntry.self],
+                            version: Schema.Version(1, 0, 0))
+        let configuration = ModelConfiguration(
+            schema: schema,
+            groupContainer: ModelConfiguration.GroupContainer.identifier("group.moonrise.JRNL.com")
+        )
+        container = try ModelContainer(for: JournalEntry.self)
+          if let container = container {
+            context = ModelContext(container)
+          }
+        } catch {
+          fatalError("Failed to create ModelContainer")
+        }
   }
 
   // MARK: access methods
