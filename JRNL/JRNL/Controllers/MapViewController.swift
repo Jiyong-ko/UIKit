@@ -24,7 +24,7 @@ class MapViewController: UIViewController {
     locationManager.requestWhenInUseAuthorization()
     self.navigationItem.title = "Loading..."
     locationManager.requestLocation()
-    SharedData.shared.loadJournalEntriesData()
+    SharedData.shared.fetchJournalEntries()
   }
 
   // MARK: - Navigation
@@ -49,7 +49,11 @@ extension MapViewController: CLLocationManagerDelegate {
       let region = MKCoordinateRegion(center: coordinate, span: span)
       mapView.setRegion(region, animated: true)
       self.navigationItem.title = "Map"
-      mapView.addAnnotations(SharedData.shared.getAllJournalEntries())
+      let journalEntries = SharedData.shared.getAllJournalEntries()
+      for entry in journalEntries {
+        let annotation = JournalEntryMKAnnotation(journalEntry: entry)
+        mapView.addAnnotation(annotation)
+      }
     }
   }
 
@@ -61,7 +65,7 @@ extension MapViewController: CLLocationManagerDelegate {
 extension MapViewController: MKMapViewDelegate {
   // 지도에 핀을 표시할 때 호출
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    guard let annotation = annotation as? JournalEntry else {
+    guard let annotation = annotation as? JournalEntryMKAnnotation else {
       return nil
     }
 
@@ -84,10 +88,10 @@ extension MapViewController: MKMapViewDelegate {
     calloutAccessoryControlTapped control: UIControl
   ) {
     print("calloutAccessoryControlTapped")
-    guard let annotation = mapView.selectedAnnotations.first as? JournalEntry else {
+    guard let annotation = mapView.selectedAnnotations.first as? JournalEntryMKAnnotation else {
       return
     }
-    selectedJournalEntry = annotation
+    selectedJournalEntry = annotation.journalEntry
     performSegue(withIdentifier: "showMapDetail", sender: self)
   }
 }
